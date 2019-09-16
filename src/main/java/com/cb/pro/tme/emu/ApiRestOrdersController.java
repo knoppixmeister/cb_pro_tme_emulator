@@ -10,7 +10,7 @@ import com.squareup.moshi.Moshi;
 @RestController
 public class ApiRestOrdersController {
 	@GetMapping(value = "/orders")
-	public List<Order> getAllOrders(
+	public List<ObOrder> getAllOrders(
 		@RequestHeader("CB-ACCESS-KEY") String cbAccessKey,
 		@RequestHeader("CB-ACCESS-SIGN") String cbAccessSign,
 		@RequestHeader("CB-ACCESS-TIMESTAMP") String cbAccessTimestamp,
@@ -54,19 +54,23 @@ public class ApiRestOrdersController {
 		@RequestHeader("CB-ACCESS-TIMESTAMP") String cbAccessTimestamp,
 		@RequestHeader("CB-ACCESS-PASSPHRASE") String cbAccessPassphrase,
 
-		@PathVariable(name = "id") String id
+		@PathVariable(name="id", required = false) String id
 	)
 	{
 		if(id != null && !id.isEmpty()) {
+			getAllOrders(cbAccessKey, cbAccessSign, cbAccessTimestamp, cbAccessPassphrase);
+
+			/*
 			if(!Utils.isValidUUID(id)) {
 				return new ResponseEntity<>("{\"message\":\"Invalid order id\"}", HttpStatus.BAD_REQUEST);
 			}
+			*/
 		}
 
-		for(Order o : Application.ORDERS) {
+		for(ObOrder o : Application.ORDERS) {
 			if(o.id.equals(id)) {
 				return new ResponseEntity<String>(
-					new Moshi.Builder().build().adapter(Order.class).toJson(o),
+					new Moshi.Builder().build().adapter(ObOrder.class).toJson(o),
 					HttpStatus.OK
 				);
 			}
@@ -85,6 +89,8 @@ public class ApiRestOrdersController {
 		@RequestBody String body
 	)
 	{
+		System.out.println("BD: "+body);
+
 		/*
 			400|Bad Request
 			{"message":"Invalid order_type lemit"}
@@ -200,7 +206,7 @@ public class ApiRestOrdersController {
 			}
 		}
 
-		for(Order o : Application.ORDERS) {
+		for(ObOrder o : Application.ORDERS) {
 			if(o.id.equalsIgnoreCase(realId)) {
 				return new ResponseEntity<String>("[\""+o.id+"\"]", HttpStatus.OK);
 			}

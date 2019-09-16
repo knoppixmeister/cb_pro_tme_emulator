@@ -1,5 +1,7 @@
 package com.cb.pro.tme.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -11,6 +13,12 @@ public class Utils {
 		String crTm = new DateTime().toString();
 
 		return crTm.substring(0, crTm.lastIndexOf("+"))+"Z";		
+	}
+
+	public static double round(double value, int places) {
+		if(places < 0) throw new IllegalArgumentException();
+
+		return (new BigDecimal(value)).setScale(places, RoundingMode.HALF_UP).doubleValue();
 	}
 
 	public static boolean isValidUUID(String uuid) {
