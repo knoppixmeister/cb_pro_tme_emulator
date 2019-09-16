@@ -3,6 +3,8 @@ package com.cb.pro.tme.emu;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
+import com.cb.pro.tme.utils.Utils;
+
 @RestController
 public class ApiRestOrdersController {
 	@GetMapping(value = "/orders")
@@ -13,7 +15,7 @@ public class ApiRestOrdersController {
 
 	@GetMapping(value = "/orders/{id}")
 	public List<Order> orders(@PathVariable(name = "id") String id) {
-		;
+		if(id != null && !id.isEmpty()) Utils.isValidUUID(id);
 
 		return null;
 	}
