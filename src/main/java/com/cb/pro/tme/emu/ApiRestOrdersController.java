@@ -50,8 +50,13 @@ public class ApiRestOrdersController {
 	}
 
 	@DeleteMapping(value = "/orders/{id}")
-	public String cancelOrders(@PathVariable(name = "id") String id) {
+	public ResponseEntity<String> cancelOrders(@PathVariable(name = "id") String id) {
+		if(id != null && !id.isEmpty()) {
+			if(!Utils.isValidUUID(id)) {
+				new ResponseEntity<String>("{}", HttpStatus.BAD_REQUEST);
+			}
+		}
 
-		return "";
+		return new ResponseEntity<String>("{}", HttpStatus.OK);
 	}
 }
