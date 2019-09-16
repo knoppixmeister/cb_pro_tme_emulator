@@ -40,6 +40,11 @@ public class ApiRestOrdersController {
 
 		Application.TME_EVENT_QUEUE.add(wsEventData);
 
+		/*
+			400|Bad Request
+			{"message":"Invalid order_type lemit"}
+		 */
+
 		return null;
 	}
 
