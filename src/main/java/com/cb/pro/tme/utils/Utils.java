@@ -11,8 +11,9 @@ public class Utils {
 
 	        return true;
 		}
-		catch(Exception e) {
-			return false;
+		catch(Exception e) {			
 		}
+
+		return false;
 	}
 }
