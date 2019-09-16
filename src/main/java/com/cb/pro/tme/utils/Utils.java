@@ -4,7 +4,15 @@ import java.util.UUID;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.joda.time.DateTime;
+
 public class Utils {
+	public static String isoDateTime() {
+		String crTm = new DateTime().toString();
+
+		return crTm.substring(0, crTm.lastIndexOf("+"))+"Z";		
+	}
+
 	public static boolean isValidUUID(String uuid) {
 		if(uuid == null || uuid.isEmpty()) return false;
 
