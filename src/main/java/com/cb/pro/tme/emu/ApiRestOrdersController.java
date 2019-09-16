@@ -10,12 +10,53 @@ import com.squareup.moshi.Moshi;
 @RestController
 public class ApiRestOrdersController {
 	@GetMapping(value = "/orders")
-	public List<Order> orders() {
+	public List<Order> getAllOrders(
+		@RequestHeader("CB-ACCESS-KEY") String cbAccessKey,
+		@RequestHeader("CB-ACCESS-SIGN") String cbAccessSign,
+		@RequestHeader("CB-ACCESS-TIMESTAMP") String cbAccessTimestamp,
+		@RequestHeader("CB-ACCESS-PASSPHRASE") String cbAccessPassphrase
+	)
+	{
+		/*
+		 	400|Bad Request
+			{"message":"CB-ACCESS-SIGN header is required"}
+
+			400|Bad Request
+			{"message":"invalid signature"}
+
+		 	401|Unauthorized
+			{"message":"CB-ACCESS-KEY header is required"}
+
+		 	400|Bad Request
+			{"message":"Invalid API Key"}
+	
+			400|Bad Request
+			{"message":"CB-ACCESS-TIMESTAMP header is required"}
+
+			400|Bad Request
+			{"message":"invalid timestamp"}
+
+			400|Bad Request
+			{"message":"CB-ACCESS-PASSPHRASE header is required"}
+
+			400|Bad Request
+			{"message":"Invalid Passphrase"}
+	
+		 */
+
 		return Application.ORDERS;
 	}
 
 	@GetMapping(value = "/orders/{id}")
-	public ResponseEntity<String> orders(@PathVariable(name = "id") String id) {
+	public ResponseEntity<String> getOrder(
+		@RequestHeader("CB-ACCESS-KEY") String cbAccessKey,
+		@RequestHeader("CB-ACCESS-SIGN") String cbAccessSign,
+		@RequestHeader("CB-ACCESS-TIMESTAMP") String cbAccessTimestamp,
+		@RequestHeader("CB-ACCESS-PASSPHRASE") String cbAccessPassphrase,
+
+		@PathVariable(name = "id") String id
+	)
+	{
 		if(id != null && !id.isEmpty()) {
 			if(!Utils.isValidUUID(id)) {
 				return new ResponseEntity<>("{\"message\":\"Invalid order id\"}", HttpStatus.BAD_REQUEST);
@@ -35,11 +76,15 @@ public class ApiRestOrdersController {
 	}
 
 	@PostMapping(value = "/orders")
-	public Order setOrder(@RequestBody String body) {
-		String wsEventData = "";
+	public Order placeOrder(
+		@RequestHeader("CB-ACCESS-KEY") String cbAccessKey,
+		@RequestHeader("CB-ACCESS-SIGN") String cbAccessSign,
+		@RequestHeader("CB-ACCESS-TIMESTAMP") String cbAccessTimestamp,
+		@RequestHeader("CB-ACCESS-PASSPHRASE") String cbAccessPassphrase,
 
-		Application.TME_EVENT_QUEUE.add(wsEventData);
-
+		@RequestBody String body
+	)
+	{
 		/*
 			400|Bad Request
 			{"message":"Invalid order_type lemit"}
@@ -63,28 +108,123 @@ public class ApiRestOrdersController {
 
 		----------------------------------------------------------------------------------
 
+			400|Bad Request
+			{"message":"Requires price"}
+
+			400|Bad Request
+			{"message":"price must be a number"}
 			
-			
-			
+		----------------------------------------------------------------------------------
+		
+			// case sensisitive "side" name
+		
+			400|Bad Request
+			{"message":"Requires side"}
+
+			400|Bad Request
+			{"message":"Invalid side buY"}
+
+		-----------------------------------------------------------
+
+			400|Bad Request
+			{"message":"Product not found"}
+
+		-----------------------------------------------------------
+
+			400|Bad Request
+			{"message":"Unexpected token s in JSON at position 96"}
+
+		-----------------------------------------------------------------
+
+			400|Bad Request
+			{"message":"Invalid time_in_force GTCi"}
+
+		-----------------------------------------------------------------
+
+			400|Bad Request
+			{"message":"Invalid client_oid"}
+
 		 */
+
+		String wsEventData = "";
+
+		Application.TME_EVENT_QUEUE.add(wsEventData);
 
 		return null;
 	}
 
 	@DeleteMapping(value = "/orders")
-	public ResponseEntity<String> cancelOrders() {
+	public ResponseEntity<String> cancelOrders(
+		@RequestHeader("CB-ACCESS-KEY") String cbAccessKey,
+		@RequestHeader("CB-ACCESS-SIGN") String cbAccessSign,
+		@RequestHeader("CB-ACCESS-TIMESTAMP") String cbAccessTimestamp,
+		@RequestHeader("CB-ACCESS-PASSPHRASE") String cbAccessPassphrase
+	)
+	{
 
 		return new ResponseEntity<String>("{}", HttpStatus.OK);
 	}
 
-	@DeleteMapping(value = "/orders/{id}")
-	public ResponseEntity<String> cancelOrders(@PathVariable(name = "id") String id) {
+	@DeleteMapping(value="/orders/{id}")
+	public ResponseEntity<String> cancelOrders(
+		@RequestHeader("CB-ACCESS-KEY") String cbAccessKey,
+		@RequestHeader("CB-ACCESS-SIGN") String cbAccessSign,
+		@RequestHeader("CB-ACCESS-TIMESTAMP") String cbAccessTimestamp,
+		@RequestHeader("CB-ACCESS-PASSPHRASE") String cbAccessPassphrase,
+
+		@PathVariable(name = "id") final String id
+	)
+	{
+		String realId = id;
+
 		if(id != null && !id.isEmpty()) {
 			if(!Utils.isValidUUID(id)) {
-				new ResponseEntity<String>("{}", HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<String>("{\"message\":\"Invalid order id\"}", HttpStatus.BAD_REQUEST);
+			}
+		}
+		else {
+			if(id.contains(":")) {
+				realId = realId.substring(realId.indexOf(":"));
+
+				if(!Utils.isValidUUID(realId)) {
+					return new ResponseEntity<String>("{\"message\":\"Invalid order id\"}", HttpStatus.BAD_REQUEST);
+				}
+				if(!id.startsWith("client")) {
+					return new ResponseEntity<String>("{\"message\":\"Invalid id namespace\"}", HttpStatus.BAD_REQUEST);
+				}
+			}
+			else {
+				if(!Utils.isValidUUID(realId)) {
+					return new ResponseEntity<String>("{\"message\":\"Invalid order id\"}", HttpStatus.BAD_REQUEST);
+				}
 			}
 		}
 
-		return new ResponseEntity<String>("{}", HttpStatus.OK);
+		for(Order o : Application.ORDERS) {
+			if(o.id.equalsIgnoreCase(realId)) {
+				return new ResponseEntity<String>("[\""+o.id+"\"]", HttpStatus.OK);
+			}
+		}
+
+		/*
+
+			500|Internal Server Error
+			{"message":"Internal server error"}
+
+			404|Not Found
+			{"message":"order not found"}
+
+			400|Bad Request
+			{"message":"Invalid order id"}
+
+			400|Bad Request
+			{"message":"Invalid id namespace"}
+
+		 */
+
+		if(id.startsWith("client:")) {
+			return new ResponseEntity<String>("{\"message\":\"Internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		else return new ResponseEntity<String>("{\"message\":\"order not found\"}", HttpStatus.NOT_FOUND);
 	}
 }
