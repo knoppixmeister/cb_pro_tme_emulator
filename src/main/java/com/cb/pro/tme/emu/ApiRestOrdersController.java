@@ -19,7 +19,7 @@ public class ApiRestOrdersController {
 	}
 
 	@PostMapping(value = "/orders")
-	public Order setOrder() {
+	public Order setOrder(@RequestBody String body) {
 		;
 
 		return null;
@@ -27,7 +27,13 @@ public class ApiRestOrdersController {
 
 	@DeleteMapping(value = "/orders")
 	public String cancelOrders() {
-		
+
+		return "";
+	}
+
+	@DeleteMapping(value = "/orders/{id}")
+	public String cancelOrders(@PathVariable(name = "id") String id) {
+
 		return "";
 	}
 }
