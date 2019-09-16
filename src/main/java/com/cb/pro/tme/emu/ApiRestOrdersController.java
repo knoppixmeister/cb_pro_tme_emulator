@@ -43,6 +43,29 @@ public class ApiRestOrdersController {
 		/*
 			400|Bad Request
 			{"message":"Invalid order_type lemit"}
+
+			400|Bad Request
+			{"message":"Invalid order_type LIMIT"}
+
+			400|Bad Request
+			{"message":"Invalid order_type limIt"}
+
+		----------------------------------------------------------------------------------
+
+			400|Bad Request
+			{"message":"size is too small. Minimum size is 0.00100000"}
+
+			400|Bad Request
+			{"message":"size must be a number"}
+
+			400|Bad Request
+			{"message":"Requires size"}
+
+		----------------------------------------------------------------------------------
+
+			
+			
+			
 		 */
 
 		return null;
