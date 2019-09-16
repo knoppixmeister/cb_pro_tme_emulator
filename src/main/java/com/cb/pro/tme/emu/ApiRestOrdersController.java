@@ -36,15 +36,17 @@ public class ApiRestOrdersController {
 
 	@PostMapping(value = "/orders")
 	public Order setOrder(@RequestBody String body) {
-		;
+		String wsEventData = "";
+
+		Application.TME_EVENT_QUEUE.add(wsEventData);
 
 		return null;
 	}
 
 	@DeleteMapping(value = "/orders")
-	public String cancelOrders() {
+	public ResponseEntity<String> cancelOrders() {
 
-		return "";
+		return new ResponseEntity<String>("{}", HttpStatus.OK);
 	}
 
 	@DeleteMapping(value = "/orders/{id}")
