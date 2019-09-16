@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Application {
 	public static final LinkedBlockingQueue<String> TME_EVENT_QUEUE = new LinkedBlockingQueue<>();
 
-	public static final List<Object> ORDERS = new CopyOnWriteArrayList<Object>();
+	public static final List<Order> ORDERS = new CopyOnWriteArrayList<Order>();
 
 	public static double CURRENT_PRICE = 9000.0;
 
