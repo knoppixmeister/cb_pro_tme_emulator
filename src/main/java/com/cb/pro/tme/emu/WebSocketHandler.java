@@ -37,7 +37,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			String eventData;
 			while(true) {
 				try {
-					eventData = Application.TME_EVENT_QUEUE.take();
+					eventData = Application.TME_EVENTS_QUEUE.take();
 
 					for(WebSocketSession s : sessions) {
 						if(s != null && s.isOpen())	s.sendMessage(new TextMessage(eventData));

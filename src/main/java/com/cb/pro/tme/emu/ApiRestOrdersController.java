@@ -154,7 +154,7 @@ public class ApiRestOrdersController {
 
 		String wsEventData = "";
 
-		Application.TME_EVENT_QUEUE.add(wsEventData);
+		Application.TME_EVENTS_QUEUE.add(wsEventData);
 
 		return null;
 	}
